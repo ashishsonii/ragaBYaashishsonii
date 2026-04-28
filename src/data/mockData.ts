@@ -3,7 +3,9 @@
    Production-realistic healthcare datasets
    ============================================ */
 
-export const kpiData = [
+import type { Patient, Notification, KPI } from '../types'
+
+export const kpiData: KPI[] = [
   {
     id: 'kpi-er-wait',
     label: 'ER Wait Time',
@@ -125,7 +127,7 @@ export const recentActivity = [
   },
 ]
 
-export const patients = [
+export const patients: Patient[] = [
   {
     id: 'P-10042',
     mrn: 'MRN-78234',
@@ -344,7 +346,7 @@ export const patients = [
   },
 ]
 
-export const notifications = [
+export const notifications: Notification[] = [
   {
     id: 'notif-1',
     title: 'Critical Lab Result — Troponin I',
