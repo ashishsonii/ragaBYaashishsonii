@@ -29,45 +29,58 @@ function Avatar({ name, status }: { name: string; status: string }) {
 
 function PatientCard({ patient }: { patient: Patient }) {
   return (
-    <div className="card animate-slide-up" style={{ padding: 20 }}>
-      {patient.codeStatus !== 'Full Code' && (
-        <div className="flex items-center gap-1.5 rounded-md" style={{ padding: '4px 8px', backgroundColor: 'var(--color-critical-surface)', marginBottom: 12 }}>
-          <ShieldAlert size={11} style={{ color: 'var(--color-critical)' }} />
-          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--color-critical)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            {patient.codeStatus}
-          </span>
-        </div>
-      )}
+    <div className="card animate-slide-up flex flex-col h-full">
+      <div style={{ padding: 20, flex: 1 }}>
+        {patient.codeStatus !== 'Full Code' && (
+          <div className="flex items-center gap-1.5 rounded-md" style={{ padding: '4px 8px', backgroundColor: 'var(--color-critical-surface)', marginBottom: 16 }}>
+            <ShieldAlert size={11} style={{ color: 'var(--color-critical)' }} />
+            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--color-critical)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              {patient.codeStatus}
+            </span>
+          </div>
+        )}
 
-      <div className="flex items-center gap-3" style={{ marginBottom: 14 }}>
-        <Avatar name={patient.name} status={patient.status} />
-        <div className="flex-1 min-w-0">
-          <h4 style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text-primary)', marginBottom: 1 }}>{patient.name}</h4>
-          <p className="tabular-nums text-caption">{patient.age}y/{patient.gender} · {patient.mrn}</p>
+        <div className="flex items-start justify-between gap-3" style={{ marginBottom: 16 }}>
+          <div className="flex items-center gap-3">
+            <Avatar name={patient.name} status={patient.status} />
+            <div>
+              <h4 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 2 }}>{patient.name}</h4>
+              <p className="tabular-nums text-caption">{patient.age}y / {patient.gender} · {patient.mrn}</p>
+            </div>
+          </div>
+          <StatusBadge status={patient.status} size="small" />
         </div>
-        <StatusBadge status={patient.status} size="small" />
+
+        <div style={{ backgroundColor: 'var(--color-elevated)', padding: 12, borderRadius: 8, marginBottom: 16 }}>
+          <div style={{ fontSize: 13, color: 'var(--color-text-primary)', fontWeight: 500, marginBottom: 4 }}>
+            {patient.condition}
+          </div>
+          <div className="flex items-center justify-between text-caption mt-2 pt-2" style={{ borderTop: '1px solid var(--color-border-subtle)' }}>
+            <span>Room {patient.room}</span>
+            <span>{patient.physician}</span>
+          </div>
+        </div>
+
+        {patient.allergies.length > 0 && (
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <AlertTriangle size={11} style={{ color: 'var(--color-warning)', flexShrink: 0 }} />
+            {patient.allergies.map((a, i) => (
+              <span key={i} style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, backgroundColor: 'var(--color-warning-surface)', color: 'var(--color-warning)', fontWeight: 500 }}>
+                {a}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
-      <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginBottom: 3 }}>{patient.condition}</p>
-      <p className="text-caption" style={{ marginBottom: 14 }}>Room {patient.room} · {patient.physician}</p>
-
-      {patient.allergies.length > 0 && (
-        <div className="flex items-center gap-1.5 flex-wrap" style={{ marginBottom: 14 }}>
-          <AlertTriangle size={11} style={{ color: 'var(--color-warning)', flexShrink: 0 }} />
-          {patient.allergies.map((a, i) => (
-            <span key={i} style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, backgroundColor: 'var(--color-warning-surface)', color: 'var(--color-warning)', fontWeight: 500 }}>
-              {a}
-            </span>
-          ))}
-        </div>
-      )}
-
-      <button
-        className="flex items-center justify-center gap-2 w-full rounded-lg btn-ghost cursor-pointer"
-        style={{ height: 34, fontSize: 12 }}
-      >
-        <Eye size={13} /> View Chart
-      </button>
+      <div style={{ padding: '12px 20px', borderTop: '1px solid var(--color-border-subtle)', backgroundColor: 'var(--color-elevated)', borderBottomLeftRadius: 12, borderBottomRightRadius: 12 }}>
+        <button
+          className="flex items-center justify-center gap-2 w-full rounded-md btn-ghost cursor-pointer"
+          style={{ height: 32, fontSize: 12, fontWeight: 500 }}
+        >
+          <Eye size={13} /> View Clinical Chart
+        </button>
+      </div>
     </div>
   )
 }
