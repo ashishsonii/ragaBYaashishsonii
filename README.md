@@ -1,228 +1,79 @@
-# MedCore EHR — B2B Healthcare SaaS UI
+<div align="center">
+  <h1>MedCore EHR</h1>
+  <p><strong>B2B Enterprise Healthcare SaaS Platform</strong></p>
+  
+  [![React](https://img.shields.io/badge/React-19.0-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![Zustand](https://img.shields.io/badge/Zustand-State-black?logo=react)](https://zustand-demo.pmnd.rs/)
+  [![Firebase](https://img.shields.io/badge/Firebase-Auth-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
+  [![Vite](https://img.shields.io/badge/Vite-Build-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 
-A production-grade **Healthcare SaaS frontend** built with **React 19**, **TypeScript**, **Zustand**, **Firebase Authentication**, and **Service Worker** notifications. Implements a **micro-frontend architecture** with code-split module loading.
+  <br />
+
+  [**View Live Demo**](https://ragaai-by-ashishsoni.vercel.app) •
+  [**Explore Code**](https://github.com/ashishsonii/ragaBYaashishsonii)
+</div>
 
 ---
 
-## Links
+## 🏥 Overview
 
-- **Live Demo**: [https://ragaai-by-ashishsoni.vercel.app](https://ragaai-by-ashishsoni.vercel.app)
-- **GitHub Repository**: [https://github.com/ashishsonii/ragaBYaashishsonii](https://github.com/ashishsonii/ragaBYaashishsonii)
+MedCore is a production-grade frontend application built to simulate a modern, clinical healthcare environment. Moving away from flashy consumer designs, this application employs a **restrained, high-density enterprise aesthetic** tailored for medical professionals, featuring dark/light mode, real-time analytics, and patient management.
+
+Built as a submission for the **Raga AI Frontend Assignment**.
 
 ---
 
-## Quick Start
+## ✨ Core Features & Compliance
 
+| Module | Features Implemented | Status |
+|--------|---------------------|:---:|
+| **Authentication** | Firebase Auth integration, validation, error states, and a smart "Demo Mode" fallback using `sessionStorage`. | ✅ |
+| **Patient Module** | Interactive Grid & List (Table) views, real-time search by MRN/Name, status filtering, and acuity badges. | ✅ |
+| **Dashboard** | KPI metrics, Recharts area/bar trends, and a recent activity feed. | ✅ |
+| **Notifications** | Service Worker implementation with push events, read/unread toggles, and critical alert modals. | ✅ |
+| **State Management** | Global state handled via **Zustand** (4 isolated stores: Auth, Patient, Theme, Notifications). | ✅ |
+
+---
+
+## 🏗️ Architecture & Engineering
+
+### Micro-Frontend Pattern (Code Splitting)
+To demonstrate scalability, the app utilizes an **App Shell + Lazy Module** architecture. Each page is loaded dynamically using `React.lazy()`, simulating a micro-frontend structure where modules can be built and chunked independently.
+
+```text
+dist/assets/
+├── DashboardPage.js      (8.5 kB)
+├── PatientsPage.js       (10.0 kB)
+├── AnalyticsPage.js      (6.2 kB)
+├── vendor-react.js       (React core)
+└── vendor-charts.js      (Recharts)
+```
+*(Vendor chunking is explicitly configured in `vite.config.js` for optimal browser caching).*
+
+### Design System
+- **Palette**: Professional Zinc (`#09090B` to `#FAFAFA`) with Purple accents for primary actions.
+- **Typography**: Inter font with strict hierarchy (Display → Heading → Label → Caption).
+- **Structure**: 8px spatial grid, 12px rounded cards, no drop shadows (clean borders only).
+- **Reusable Components**: Includes `StatusBadge`, `CommandPalette` (Ctrl+K), `Skeleton`, `EmptyState`, and `Toast`.
+
+---
+
+## 🚀 Quick Start
+
+### Running Locally
 ```bash
+# Install dependencies
 npm install
+
+# Start the Vite development server
 npm run dev
 ```
 
-> **Demo Mode**: Works out of the box. Any email/password will authenticate.
+> **Note on Authentication**: The app is designed to work immediately. If no Firebase `.env` variables are found, it gracefully falls back to a **Demo Mode**. You can log in using *any* email and password combo.
 
----
-
-## Architecture
-
-### Micro-Frontend Pattern
-
-The application implements an **App Shell + Lazy Module** architecture — the same pattern used by Module Federation but achievable within a single Vite build:
-
-```
-┌─────────────────────────────────────────────────────┐
-│                   App Shell (Host)                   │
-│  ┌─────────┐  ┌──────────┐  ┌────────────────────┐ │
-│  │ Sidebar  │  │ TopNavbar │  │ CommandPalette     │ │
-│  └─────────┘  └──────────┘  └────────────────────┘ │
-│                                                     │
-│  React.lazy() ──┬── DashboardPage (chunk)           │
-│                 ├── AnalyticsPage  (chunk)           │
-│                 ├── PatientsPage   (chunk)           │
-│                 ├── NotificationsPage (chunk)        │
-│                 └── LoginPage      (chunk)           │
-│                                                     │
-│  Zustand ───────┬── authStore                       │
-│                 ├── patientStore                     │
-│                 ├── notificationStore                │
-│                 └── themeStore                       │
-└─────────────────────────────────────────────────────┘
-```
-
-**Each page module:**
-- Loads as a separate JavaScript chunk via `React.lazy()`
-- Has its own Zustand store slice for domain state
-- Contains all its own sub-components inline
-- Could be extracted to a separate repo and loaded via Module Federation
-
-**Build output** confirms code-splitting:
-```
-DashboardPage.js       8.53 kB
-AnalyticsPage.js       6.22 kB
-PatientsPage.js       10.03 kB
-NotificationsPage.js   8.80 kB
-LoginPage.js           6.62 kB
-vendor-react.js      219.60 kB  (cached)
-vendor-charts.js     383.39 kB  (cached)
-```
-
-### Vendor Chunking Strategy
-
-```js
-// vite.config.js — Manual chunk splitting
-manualChunks(id) {
-  if (id.includes('react-dom'))     return 'vendor-react'
-  if (id.includes('recharts'))      return 'vendor-charts'
-  if (id.includes('lucide-react'))  return 'vendor-icons'
-  if (id.includes('zustand'))       return 'vendor-state'
-}
-```
-
----
-
-## Tech Stack
-
-| Requirement | Implementation |
-|---|---|
-| **React** | React 19 with functional components & hooks |
-| **TypeScript** | Strict mode, centralized types (`src/types/index.ts`) |
-| **State Management** | **Zustand** — 4 stores (`auth`, `patient`, `notification`, `theme`) |
-| **Authentication** | **Firebase Auth** (Email/Password) with demo fallback |
-| **Service Worker** | `public/sw.js` — push events, caching, message-triggered notifications |
-
----
-
-## Project Structure
-
-```
-src/
-├── App.tsx                          # App Shell — lazy loading, routing, guards
-├── main.tsx                         # Boot: theme → auth → service worker
-├── index.css                        # Design system (CSS custom properties, dual theme)
-│
-├── config/
-│   └── firebase.ts                  # Firebase config (env-driven)
-│
-├── store/                           # Zustand stores (global state)
-│   ├── authStore.ts                 # Auth: login/logout, session, Firebase listener
-│   ├── patientStore.ts              # Patients: data, search, filter, view mode
-│   ├── notificationStore.ts         # Alerts: notifications, toasts, unread count
-│   └── themeStore.ts                # Theme: dark/light toggle, localStorage
-│
-├── types/
-│   └── index.ts                     # All TypeScript interfaces
-│
-├── utils/
-│   └── serviceWorker.ts             # SW registration, permission, notifications
-│
-├── data/
-│   └── mockData.ts                  # Clinical mock data (12 patients, KPIs, charts)
-│
-├── components/
-│   ├── layout/
-│   │   ├── Sidebar.tsx              # Collapsible nav with unread badge
-│   │   └── TopNavbar.tsx            # Search, theme toggle, profile menu
-│   └── ui/
-│       ├── StatusBadge.tsx          # Semantic status indicator
-│       ├── CommandPalette.tsx       # Ctrl+K command search
-│       ├── Toast.tsx                # Toast notification system
-│       ├── CriticalAlertModal.tsx   # Modal for critical acknowledgments
-│       ├── Skeleton.tsx             # Skeleton loading variants
-│       └── EmptyState.tsx           # Empty state component
-│
-└── pages/                           # ← Micro-app modules (lazy-loaded)
-    ├── LoginPage.tsx                # Auth module
-    ├── DashboardPage.tsx            # Dashboard module (KPIs + charts)
-    ├── AnalyticsPage.tsx            # Analytics module (trends + performance)
-    ├── PatientsPage.tsx             # Patient management module (grid/list)
-    └── NotificationsPage.tsx        # Notification center module
-
-public/
-└── sw.js                            # Service Worker (push, fetch, message handlers)
-```
-
----
-
-## Requirements Compliance
-
-### 1. Authentication ✅
-
-| Feature | Status |
-|---------|--------|
-| Firebase Auth (Email/Password) | ✅ `src/config/firebase.ts` |
-| Login validation | ✅ Form validation with error states |
-| Error states | ✅ Inline error messages |
-| Session handling | ✅ `sessionStorage` (demo) / `onAuthStateChanged` (Firebase) |
-| Protected routes | ✅ `ProtectedRoute` component in `App.tsx` |
-| Logout | ✅ Profile menu → Sign Out → redirect to `/login` |
-
-### 2. Application Pages ✅
-
-| Page | Route | Module |
-|------|-------|--------|
-| Login | `/login` | `LoginPage.tsx` |
-| Dashboard | `/` | `DashboardPage.tsx` — KPI cards, area chart, bar chart, activity feed |
-| Analytics | `/analytics` | `AnalyticsPage.tsx` — Readmission trends, mortality, satisfaction |
-| Patients | `/patients` | `PatientsPage.tsx` — Grid/List with search & filter |
-| Notifications | `/notifications` | `NotificationsPage.tsx` — Alert center |
-
-### 3. Patient Details Module ✅
-
-| Feature | Status |
-|---------|--------|
-| **Grid View** | ✅ Cards with avatar, status, allergies, DNR banners |
-| **List View** | ✅ Full data table with acuity, room, physician columns |
-| **Toggle switch** | ✅ Grid/List icon buttons |
-| **Responsiveness** | ✅ 1-col → 2-col → 3-col grid breakpoints |
-| **Search** | ✅ Real-time by name, MRN, or condition |
-| **Filter** | ✅ Status dropdown (All / Critical / Observation / Stable) |
-
-### 4. Notifications (Service Worker) ✅
-
-| Feature | Status |
-|---------|--------|
-| Service Worker registration | ✅ `src/utils/serviceWorker.ts` → `public/sw.js` |
-| Push notification support | ✅ Push event listener in `sw.js` |
-| **Working use case** | ✅ Dashboard auto-triggers a lab result notification after 8s |
-| **Test button** | ✅ "Test Push" button on Notifications page |
-| Permission flow | ✅ Requests on first dashboard visit |
-| Notification click handler | ✅ Opens/focuses app window |
-
-### 5. State Management ✅
-
-| Store | Domain | Key Actions |
-|-------|--------|-------------|
-| `authStore` | Authentication | `login()`, `logout()`, `initAuthListener()` |
-| `patientStore` | Patient data | `setSearchQuery()`, `setStatusFilter()`, `setViewMode()` |
-| `notificationStore` | Alerts | `markRead()`, `markAllRead()`, `openCriticalAlert()` |
-| `themeStore` | UI theme | `toggleTheme()`, `setTheme()` |
-
-### Bonus Features ✅
-
-| Bonus | Implementation |
-|-------|---------------|
-| **Micro-frontend** | App Shell + React.lazy code-split modules + vendor chunking |
-| **Reusable components** | `StatusBadge`, `EmptyState`, `Skeleton`, `Toast`, `CommandPalette`, `CriticalAlertModal` |
-| **Performance** | Lazy loading, skeleton states, `useMemo` filtering, SW caching |
-| **Clean structure** | `store/`, `types/`, `components/`, `pages/`, `utils/`, `config/` |
-| **Dark/Light mode** | CSS custom properties + Zustand persistence |
-| **Keyboard shortcuts** | Ctrl+K command palette |
-
----
-
-## Design System
-
-- **Dark theme**: Zinc palette (`#09090B` → `#18181B`)
-- **Light theme**: Clean whites (`#FAFAFA` → `#FFFFFF`)
-- **Accent**: Purple `#7C3AED` (used sparingly for CTAs and active states)
-- **Typography**: Inter font, 4-level hierarchy (Display → Heading → Label → Caption)
-- **Spacing**: 8px grid system
-- **Cards**: 12px border-radius, 1px borders, no drop shadows
-- **Accessibility**: WCAG 2.1 AA color contrast, focus rings, semantic HTML
-
----
-
-## Firebase Setup (Optional)
-
+### Firebase Setup (Optional)
+To test true Firebase Auth, create a `.env` file:
 ```env
 VITE_FIREBASE_API_KEY=your_key
 VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
@@ -234,18 +85,23 @@ VITE_FIREBASE_APP_ID=your_app_id
 
 ---
 
-## Deploy
+## 📂 Project Structure
 
-```bash
-npm run build
-# Output in dist/ — deploy to Vercel/Netlify
-```
-
-For Vercel, add a `vercel.json` for SPA routing:
-```json
-{ "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
+```text
+src/
+├── components/          # Reusable UI & Layout components
+├── config/              # Environment & Firebase initialization
+├── data/                # Clinical mock datasets
+├── pages/               # Lazy-loaded micro-frontend modules
+├── store/               # Zustand state slices
+├── types/               # Strict TypeScript interfaces
+├── utils/               # Service Worker utilities
+├── App.tsx              # App Shell and Routing logic
+└── index.css            # CSS variables & global design tokens
 ```
 
 ---
 
-Built for **Raga AI** Frontend Assignment — 2026
+<div align="center">
+  <p>Engineered for performance, scalability, and clinical precision.</p>
+</div>
